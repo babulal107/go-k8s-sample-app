@@ -1,4 +1,6 @@
-## Sample Go k8s application
+## Go k8s Sample Application:
+Just a simple GoLang application create using the Go-gin HTTP framework. Create a health-check endpoint.
+`GET [http](http://localhost:8080/health-check)`
 
 ## Containerize Go Application by Docker
 
@@ -7,13 +9,13 @@
   docker build -t babulal107/go-k8s-sample-app:latest .
 ```
 
-#### Run Image will create container 
+#### Run Image will create a container 
 
 ```shell
   docker run --name=go_k8s_app -d -p 8080:8080 -it babulal107/go-k8s-sample-app
 ```
 
-#### Stop running container
+#### Stop running the container
 
 ```shell
   docker container stop a9cf0c3534a1
@@ -35,13 +37,13 @@ Run
 
 #### Checking Logs
 ```shell
-  docker compose logs go_k8s_app
+  docker-compose logs go_k8s_app
 ```
 
 ## Run Container in Kubernetes(k8s)
 ## Start Minikube:
 Once we do minikube start, your k8s cluster started
-On Mac/Windows on => VM -> single node kubernetes cluster with a default driver as docker
+On Mac/Windows on => VM -> single node Kubernetes cluster with a default driver as docker
 ```shell
   minikube start
 ```
@@ -51,7 +53,7 @@ On Mac/Windows on => VM -> single node kubernetes cluster with a default driver 
 ```
 
 ## 1. Pod:
-  Pod is a specification of how to run container.
+  Pod is a specification of how to run the container.
 
 Create Pod:
 Minikube, you need to load the image into its internal Docker environment:
@@ -70,14 +72,14 @@ OR
   kubectl get pods -o wide
 ```
 
-Login to kubernetes cluster and hit request to pod container
+Login to Kubernetes cluster and hit request to pod container
 ```shell
   minikube ssh
   
   curl 10.244.0.9:8080/health-check
 ```
 
-- Check details about pod:
+- Check details about the pod:
 ```shell
   kubectl describe pod go-k8s-sample-app
 ```
@@ -135,20 +137,20 @@ Access application in-with org/network by NodePort mode or publicly by Load Bala
 ```
 
 
-Login to kubernetes cluster and hit request by service cluster ip-address:
+Login to Kubernetes cluster and hit request by service cluster IP-Address:
 ```shell
   minikube ssh
   curl http://10.110.66.39:80/health-check
 ```
 Hit request through NodePort IP address
-- Get Minikube node ip
+- Get Minikube node IP
 ```shell
   minikube ip
   
   curl http://192.168.49.2:30007/health-check
 ```
   
-  If unable to access the application may be if you run on VM with a specific networking configuration.
+  If you are unable to access the application, it may be if you run on a VM with a specific networking configuration.
 
 Try Minikube Tunnel (If Using Minikube):
   This may be required if you’re running Minikube on a VM with specific networking configurations.
@@ -170,8 +172,8 @@ Try Minikube Tunnel (If Using Minikube):
 ```shell
   kubeshark tap
 ```
-It will run kubeshark and redirect to web page with url like http://127.0.0.1:8899/?q=%21dns+and+%21error
+It will run Kubeshark and redirect to a web page with a URL like http://127.0.0.1:8899/?q=%21dns+and+%21error
 
-We can add filter to see specific endpoint traffic route request:
+We can add a filter to see specific endpoint traffic route requests:
   `http and request.path == "/health-check"` and click on apply
 
