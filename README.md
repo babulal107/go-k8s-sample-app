@@ -1,12 +1,13 @@
 ## Sample Go k8s application
 
-## Build the Go app server
+## Containerize Go Application by Docker
 
-```sh
+#### Build Docker Image:
+```ssh
   docker build -t babulal107/go-k8s-sample-app:latest .
 ```
 
-#### Run the Go app server
+#### Run Image will create container 
 
 `docker run --name=go_k8s_app -d -p 8080:8080 -it babulal107/go-k8s-sample-app`
 
@@ -20,15 +21,16 @@ Open your browser and type `http://localhost:8080/health-check`
 
 ### Using Docker Compose
 
+#### Run Application by docker-compose like if we have multiple containers e.g Go App and Postgresql 
 Run
 `docker-compose up -d`
 OR
 `docker-compose up -d --build`
 
-### Checking Logs
+#### Checking Logs
 `docker compose logs go_k8s_app`
 
-
+## Run Container in Kubernetes(k8s)
 ## Start Minikube:
 Once we do minikube start, your k8s cluster started
 On Mac/Windows on => VM -> single node kubernetes cluster with a default driver as docker
@@ -40,7 +42,8 @@ On Mac/Windows on => VM -> single node kubernetes cluster with a default driver 
   minikube status
 ```
 
-#### 1. Pod is a specification of how to run container.
+## 1. Pod:
+  Pod is a specification of how to run container.
 
 Create Pod:
 Minikube, you need to load the image into its internal Docker environment:
@@ -94,7 +97,7 @@ It's just a wrapper that manages replicas of Pods (updating, scaling & rolling b
   > kubectl get pods -v=7
   > 
 
-## Service:
+## 3. Service:
 Service a wrapper on top up of Deployment. Exposes pods to internal/external networks. 
 It enables communication between components or external access to applications.
 Access application in-with org/network by NodePort mode or publicly by Load Balancer
