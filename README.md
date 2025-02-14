@@ -3,17 +3,21 @@
 ## Containerize Go Application by Docker
 
 #### Build Docker Image:
-```ssh
+```shell
   docker build -t babulal107/go-k8s-sample-app:latest .
 ```
 
 #### Run Image will create container 
 
-`docker run --name=go_k8s_app -d -p 8080:8080 -it babulal107/go-k8s-sample-app`
+```shell
+  docker run --name=go_k8s_app -d -p 8080:8080 -it babulal107/go-k8s-sample-app
+```
 
 #### Stop running container
 
-`docker container stop a9cf0c3534a1`
+```shell
+  docker container stop a9cf0c3534a1
+```
 
 #### Verify Go app server running on localhost
 
@@ -23,12 +27,16 @@ Open your browser and type `http://localhost:8080/health-check`
 
 #### Run Application by docker-compose like if we have multiple containers e.g Go App and Postgresql 
 Run
-`docker-compose up -d`
-OR
-`docker-compose up -d --build`
+```shell
+  docker-compose up -d
+  # OR force to build image always
+  docker-compose up -d --build
+```
 
 #### Checking Logs
-`docker compose logs go_k8s_app`
+```shell
+  docker compose logs go_k8s_app
+```
 
 ## Run Container in Kubernetes(k8s)
 ## Start Minikube:
@@ -65,17 +73,24 @@ OR
 Login to kubernetes cluster and hit request to pod container
 ```shell
   minikube ssh
+  
   curl 10.244.0.9:8080/health-check
 ```
 
 - Check details about pod:
-  > kubectl describe pod go-k8s-sample-app
+```shell
+  kubectl describe pod go-k8s-sample-app
+```
 
 - Check logs of pod:
-  > kubectl logs go-k8s-sample-app
+```shell
+  kubectl logs go-k8s-sample-app
+```
 
 - Delete pod:
-  > kubectl delete pods go-k8s-sample-app
+```shell
+  kubectl delete pods go-k8s-sample-app
+```
   
 ## 2. Deployment:
 It's just a wrapper that manages replicas of Pods (updating, scaling & rolling back of pods)
@@ -84,18 +99,24 @@ It's just a wrapper that manages replicas of Pods (updating, scaling & rolling b
   kubectl apply -f deployment.yml
 ```
 - Get all info
-  > kubectl get all
+```shell
+  kubectl get all
+```
 
 - Get Deployment & pods info:
-  > kubectl get deploy
-
-  > kubectl get pods
-
-  > kubectl get pods -o wide
+```shell
+  kubectl get deploy
+  
+  kubectl get pods
+  
+  kubectl get pods -o wide
+```
 
 - Get Pods info in vorticity level like 7 or 9(max)
-  > kubectl get pods -v=7
-  > 
+```shell
+  kubectl get pods -v=7
+```
+
 
 ## 3. Service:
 Service a wrapper on top up of Deployment. Exposes pods to internal/external networks. 
@@ -107,9 +128,12 @@ Access application in-with org/network by NodePort mode or publicly by Load Bala
 ```
   
 - Get all Service info:
-  > kubectl get svc
+```shell
+  kubectl get svc
   
-  > kubectl get svc -v=7
+  kubectl get svc -v=7
+```
+
 
 Login to kubernetes cluster and hit request by service cluster ip-address:
 ```shell
@@ -118,18 +142,24 @@ Login to kubernetes cluster and hit request by service cluster ip-address:
 ```
 Hit request through NodePort IP address
 - Get Minikube node ip
-  > minikube ip
-
-  > curl http://192.168.49.2:30007/health-check
+```shell
+  minikube ip
+  
+  curl http://192.168.49.2:30007/health-check
+```
   
   If unable to access the application may be if you run on VM with a specific networking configuration.
 
 Try Minikube Tunnel (If Using Minikube):
   This may be required if you’re running Minikube on a VM with specific networking configurations.
   Get URL with port:
-  > minikube service go-k8s-app-service --url
+```shell
+  minikube service go-k8s-app-service --url
+```
 
-  > curl http://127.0.0.1:60001/health-check
+```shell
+  curl http://127.0.0.1:60001/health-check
+```
  
 ## Install KubeShark
   Doc link: https://docs.kubeshark.co/en/install
