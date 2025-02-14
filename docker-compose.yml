@@ -1,0 +1,11 @@
+services:
+  go_backend:
+    build: .  # Use `build` to rebuild the image when code changes
+    #image: babulal107/go-k8s-sample-app:latest # Optional: Tag the image
+    ports:
+      - "8080:8080"
+    networks:
+      - "go_k8s_app"
+networks:
+  go_k8s_app:
+    driver: bridge

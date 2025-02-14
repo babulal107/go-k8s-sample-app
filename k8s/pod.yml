@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: go-k8s-sample-app
+  labels:
+    app: go-k8s-sample-app
+spec:
+  containers:
+    - name: go-k8s-app
+      image: babulal107/go-k8s-sample-app:latest  # Using local image OR replace with your image from remote registry
+      imagePullPolicy: Never  # Optional This forces Kubernetes to use the local image
+      ports:
+        - containerPort: 8080  # Change based on your app's port
+      env:
+        - name: ENV
+          value: "local"
