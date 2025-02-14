@@ -1,5 +1,6 @@
 ## Go k8s Sample Application:
 Just a simple GoLang application create using the Go-gin HTTP framework. Create a health-check endpoint.
+
 `GET [http](http://localhost:8080/health-check)`
 
 ## Containerize Go Application by Docker
