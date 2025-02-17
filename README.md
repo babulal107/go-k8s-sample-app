@@ -180,3 +180,39 @@ It will run Kubeshark and redirect to a web page with a URL like http://127.0.0.
 We can add a filter to see specific endpoint traffic route requests:
   `http and request.path == "/health-check"` and click on apply
 
+
+## Kubernetes Ingress:
+
+#### Problems Load Balancer Type Service:
+  1. Enterprise and TLS Load Balancing Capitalizes not support:
+     (ratio-based, sticky session, TLS, HTTPS, host-base, path-base, whitelisting, blacklisting)
+  2. Load Balancer type service: Cloud provider will charge you each every Load Balancer Service type for all static public ip-addresses.
+
+  - User creates Ingress resource: allows you to create Ingress Resource (routing rules to services)
+  - Deploy Ingress Controller (Load Balancer + API Gateway)
+  - Load Balancing Company like (NGINX, F5) → They will write their own Ingress Controller and make it public like how to install.
+
+### 🚀 How It Works:
+  - Ingress Resource: Defines routing rules (e.g., paths like /api or domains like app.example.com).
+  - NGINX Ingress Controller: Reads these rules and handles incoming traffic, forwarding it to the right service inside the cluster.
+
+### Install NGINX Ingress Controller (As Load Balancer)
+
+```shell
+  minikube addons enable ingress
+```
+
+### Verify that the NGINX Ingress controller is running
+```shell
+  kubectl get pods -n ingress-nginx
+```
+
+### Create Ingress as Resources based on defined rules in ingress.yml file.
+```shell
+  kubectl apply -f k8s/ingress.yml
+  
+  kubectl get ingress
+```
+
+### Configure Host in /etc/hosts file for local checking
+`192.168.49.2	example.com`
