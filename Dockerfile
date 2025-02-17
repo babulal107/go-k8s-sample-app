@@ -19,6 +19,8 @@ RUN CGO_ENABLED=0 go build -v -o ./main ./cmd
 # --------- Stage 2: Create Minimal Runtime Image using Distroless image as scratch ---------
 # Fincal stage size will be reduce around 4mb only instant of 890mb at above stage
 FROM scratch
+# Refer to https://github.com/GoogleContainerTools/distroless for more details
+# FROM gcr.io/distroless/static:nonroot
 
 # Copy the statically built binary and configs
 WORKDIR /app
