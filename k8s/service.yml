@@ -4,6 +4,8 @@ metadata:
   name: go-k8s-app-service
 spec:
   type: NodePort
+  # Want to access publicly, we need to use service type LoadBalancer.Locally not work because LoadBalancer type-only support by Cloud Provider
+  # type: LoadBalancer
   selector:
     app: go-k8s-sample-app
   ports:
