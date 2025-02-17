@@ -42,7 +42,9 @@ Run
 ```
 
 ## Run Container in Kubernetes(k8s)
-## Start Minikube:
+### Install Minikube:
+  dock lin: https://minikube.sigs.k8s.io/docs/start/?arch=%2Fmacos%2Farm64%2Fstable%2Fbinary+download
+### Start Minikube:
 Once we do minikube start, your k8s cluster started
 On Mac/Windows on => VM -> single node Kubernetes cluster with a default driver as docker
 ```shell
@@ -59,7 +61,7 @@ On Mac/Windows on => VM -> single node Kubernetes cluster with a default driver 
 Create Pod:
 Minikube, you need to load the image into its internal Docker environment:
 ```shell
-   minikube image load babulal107/go-k8s-sample-app:latest
+  minikube image load babulal107/go-k8s-sample-app:latest
 ```
 ```shell
   kubectl apply -f k8s/pod.yml
