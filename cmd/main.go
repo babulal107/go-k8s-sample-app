@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -8,6 +9,14 @@ import (
 func main() {
 	// create default gin router
 	r := gin.Default()
+
+	r.GET("/", func(c *gin.Context) {
+		msg := fmt.Sprintf("Hello from Golang App! Path: %s", c.Request.URL.Path)
+		c.JSON(200, gin.H{
+			"status":  "ok",
+			"message": msg,
+		})
+	})
 
 	r.GET("/health-check", func(c *gin.Context) {
 		c.JSON(200, gin.H{

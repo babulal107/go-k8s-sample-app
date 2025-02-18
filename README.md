@@ -152,16 +152,16 @@ Hit request through NodePort IP address
   
   curl http://192.168.49.2:30007/health-check
 ```
-  
-  If you are unable to access the application, it may be if you run on a VM with a specific networking configuration.
+  If you're running Minikube with the Docker driver on macOS (Darwin), 
+  NodePort services are not directly accessible via minikube ip due to how networking works with Docker.
 
-Try Minikube Tunnel (If Using Minikube):
-  This may be required if you’re running Minikube on a VM with specific networking configurations.
-  Get URL with port:
+Use minikube service Command:
+    This will return a URL like: http://127.0.0.1:XXXXX
 ```shell
   minikube service go-k8s-app-service --url
 ```
 
+Use this URL to test your service:
 ```shell
   curl http://127.0.0.1:60001/health-check
 ```
@@ -175,11 +175,10 @@ Try Minikube Tunnel (If Using Minikube):
 ```shell
   kubeshark tap
 ```
-It will run Kubeshark and redirect to a web page with a URL like http://127.0.0.1:8899/?q=%21dns+and+%21error
+It will run KubeShark and redirect to a web page with a URL like http://127.0.0.1:8899/?q=%21dns+and+%21error
 
 We can add a filter to see specific endpoint traffic route requests:
   `http and request.path == "/health-check"` and click on apply
-
 
 ## Kubernetes Ingress:
 
@@ -196,23 +195,42 @@ We can add a filter to see specific endpoint traffic route requests:
   - Ingress Resource: Defines routing rules (e.g., paths like /api or domains like app.example.com).
   - NGINX Ingress Controller: Reads these rules and handles incoming traffic, forwarding it to the right service inside the cluster.
 
-### Install NGINX Ingress Controller (As Load Balancer)
+#### Install NGINX Ingress Controller (As Load Balancer)
 
 ```shell
   minikube addons enable ingress
 ```
 
-### Verify that the NGINX Ingress controller is running
+#### Check Ingress addon running:
+```shell
+  minikube addons list | grep ingress
+```
+
+#### Verify Ingress controller running or not:
 ```shell
   kubectl get pods -n ingress-nginx
 ```
 
-### Create Ingress as Resources based on defined rules in ingress.yml file.
+#### Check the Ingress Controller Service Type
+```shell
+  kubectl get svc -n ingress-nginx
+```
+
+#### Create Ingress as Resources based on defined rules in ingress.yml file.
 ```shell
   kubectl apply -f k8s/ingress.yml
   
   kubectl get ingress
 ```
 
-### Configure Host in /etc/hosts file for local checking
-`192.168.49.2	example.com`
+#### Verify Ingress resource Describe Ingress resources:
+```shell
+  kubectl describe ingress ingress-example 
+```
+
+#### Configure Host in /etc/hosts file for local checking
+```shell
+  echo "$(minikube ip) example.com" | sudo tee -a /etc/hosts
+```
+OR 
+`192.168.49.2 example.com`
