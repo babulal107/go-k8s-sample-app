@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-config
+data:
+  config.yaml: |
+    APP_PORT: "8080"
+    APP_LOG_LEVEL: "debug"

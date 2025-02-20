@@ -234,3 +234,49 @@ We can add a filter to see specific endpoint traffic route requests:
 ```
 OR 
 `192.168.49.2 example.com`
+
+## ConfigMap & Secrets
+  - ConfigMaps and Secrets are used to manage configuration data separately from application code.
+  - ConfigMaps: Store non-sensitive configuration data (app-name, log-level, app-port, db-port etc). →  plain text
+  - Secrets: Store sensitive data (passwords, tokens, keys). → Base64-encoded
+
+  Problem: if configuration is updated then, It didn't reflect in env if used an ENV type. You need to re-create containers that is not a good way.
+  Solution: using VolumeMounts: you will do the same thing, but instant of ENV used files here as we are doing mounting.
+
+### 1. ConfigMaps:
+```shell
+  kubectl apply -f k8s/cm.yml
+```
+
+Get all ConfigMaps: 
+```shell
+  kubectl get cm
+```
+
+Describe ConfigMaps get all details:
+```shell
+  kubectl describe cm test-config
+```
+
+Check inside your running pod:
+```shell
+  kubect get pods
+  
+  kubectl exec -it go-k8s-sample-app-668577d89d-pcznr -- ls -l /opt  
+  
+  OR 
+  
+  kubectl exec -it go-k8s-sample-app-668577d89d-pcznr -- /bin/sh 
+```
+
+### 2. Secrets:
+
+```shell
+  kubectl apply -f k8s/db_secret.yml  
+  
+  kubectl get secret
+  
+  kubectl describe secret db-secret
+
+```
+You can check your application pod logs, you will see as you logged loaded configs

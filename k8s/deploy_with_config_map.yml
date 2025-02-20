@@ -18,14 +18,21 @@ spec:
         - name: go-k8s-app
           image: babulal107/go-k8s-sample-app:latest  # Using local image OR replace with your image from remote registry
           imagePullPolicy: Never  # Optional This forces Kubernetes to use the local image
-          volumeMounts:
-            - name: app-cm-config
-              mountPath: /opt # mounting each key as a separate file
-              #mountPath: /opt/config.yaml # Go-code level, you can read the entire file at once and parse it.
-              #subPath: config.yaml # This ensures the file is mounted as a single file
+          env:
+            - name: APP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: test-config
+                  key: app_port
+            - name: APP_LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: test-config
+                  key: app_log_level
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: test-config
+                  key: db_port
           ports:
             - containerPort: 8080
-      volumes:
-        - name: app-cm-config
-          configMap:
-            name: test-config

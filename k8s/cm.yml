@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-config
+data:
+  app_port: "8080"
+  app_log_level: "debug"
+  db_port: "3306"

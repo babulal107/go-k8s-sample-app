@@ -2,11 +2,18 @@ package main
 
 import (
 	"fmt"
+	"github.com/babulal107/go-k8s-sample-app/internal"
 	"github.com/gin-gonic/gin"
 	"log"
 )
 
 func main() {
+
+	// Load config from env variables
+	config := internal.LoadConfig()
+
+	log.Printf("configs object : %+v\n", config)
+
 	// create default gin router
 	r := gin.Default()
 
@@ -25,8 +32,8 @@ func main() {
 		})
 	})
 
-	log.Println("Starting server on port 8080")
-	if err := r.Run(":8080"); err != nil {
+	log.Println("Starting server on port: ", config.AppPort)
+	if err := r.Run(fmt.Sprintf(":%s", config.AppPort)); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
