@@ -243,6 +243,27 @@ OR
   Problem: if configuration is updated then, It didn't reflect in env if used an ENV type. You need to re-create containers that is not a good way.
   Solution: using VolumeMounts: you will do the same thing, but instant of ENV used files here as we are doing mounting.
 
+#### When to use mountPath and subPath?
+
+1. MountPath: Mounts the entire volume
+   - The entire volume will be available at this location.
+   - If the volume contains multiple files, they will all be accessible inside the mountPath.
+   
+   Effect/Example: 
+    - The entire app-config-secret secret will be mounted at /opt/config.
+    - If app-config-secret contains multiple files, all of them will be in /opt/config/. like app_secret.yaml & db_secret_yaml etc.
+
+2. SubPath: 
+    - Mounts only a single file or directory.
+    - If you need only one file
+   
+    Effect/Example: Instead of mounting the entire secret as /opt/config/, only db_secret.yaml is mounted at /opt/config/db_secret.yaml.
+
+#### 🚀 Which One Should You Use?
+  ✅ Use mountPath alone if you want all files from the volume.
+
+  ✅ Use subPath if you only need a specific file from the volume.
+
 ### 1. ConfigMaps:
 ```shell
   kubectl apply -f k8s/cm.yml
@@ -280,3 +301,45 @@ Check inside your running pod:
 
 ```
 You can check your application pod logs, you will see as you logged loaded configs
+
+
+#### A). Secret with mounting volume as file
+
+##### How to Generate the Base64 Content
+ If you want to encode the values yourself, run:
+```shell
+  echo -n "DB_NAME: test_db\nDB_USERNAME: root\nDB_PASSWORD: user@123\nDB_PORT: 3306" | base64
+```
+Output look like: 
+```
+RE5BTUU6IHRlc3RfZGIKREJfUE9SVDogMzMwNgo=
+```
+
+Check db_config.yaml file generated or not
+```shell
+  kubectl get pods
+  
+  kubectl exec -it go-k8s-sample-app-69bffb7755-bppnf -- ls -l /opt/config
+```
+
+### MountVolumes with multiple config files
+
+db_secret.yaml
+```shell
+  echo -n "DB_NAME: test_db\nDB_USERNAME: root\nDB_PASSWORD: user@123\nDB_PORT: 3306" | base64
+```
+
+app_secret.yaml
+```shell
+  echo -n "APP_PORT: 8080\nAPP_LOG_LEVEL: root\nAPP_ENV: dev" | base64
+```
+
+```shell
+   kubectl apply -f k8s/app_config_sectet.yml
+   
+   OR
+   
+   kubectl create secret generic my-app-config-secret \
+    --from-file=k8s/config/app_config.yaml --from-file=k8s/config/db_secret.yaml 
+```
+
