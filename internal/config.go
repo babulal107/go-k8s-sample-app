@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
@@ -8,9 +9,10 @@ import (
 )
 
 type Config struct {
-	AppName        string         `json:"appName" yaml:"appName"`
-	AppPort        string         `json:"appPort" yaml:"appPort"`
-	AppLogLevel    string         `json:"appLogLevel" yaml:"appLogLevel"`
+	AppName        string         `json:"appName" yaml:"APP_NAME"`
+	AppPort        string         `json:"appPort" yaml:"APP_PORT"`
+	AppLogLevel    string         `json:"appLogLevel" yaml:"APP_LOG_LEVEL"`
+	AppEnv         string         `json:"appEnv" yaml:"APP_ENV"`
 	DatabaseConfig DatabaseConfig `json:"databaseConfig" yaml:"databaseConfig"`
 }
 
@@ -74,18 +76,35 @@ func LoadConfig() *Config {
 	// Read environment variable
 	port := os.Getenv("APP_PORT")
 	if port == "" {
+		fmt.Println("default port used: 8080")
 		port = "8080" // Default value if not set
 	}
 
 	logLevel := os.Getenv("APP_LOG_LEVEL")
 	if logLevel == "" {
+		fmt.Println("default log level used: info")
 		logLevel = "info" // Default log-level will be `info` if not set
 	}
 
+	//var config Config
+
 	// Read db_config from a secret file
 	filePath := "/opt/config/db_config.yaml"
+	//filePathAppConfig := "/opt/config/app_config.yaml"
+	//
+	//// Load App config from app_config secret file
+	//appDataConfig := ReadConfigFileFromSecret(filePathAppConfig)
+	//// Parse YAML
+	//err := yaml.Unmarshal(appDataConfig, &config)
+	//if err != nil {
+	//	log.Fatalf("Error parsing YAML: %v", err)
+	//}
+	//log.Printf("config object : %+v\n", config)
 
-	dbConfigs := ReadDBSecretConfigFromFile(filePath)
+	// Load DB config from db_config secret file
+	dbConfigs := ReadDBSecretConfig(filePath)
+
+	//config.DatabaseConfig = dbConfigs
 
 	return &Config{
 		AppName:        "go-k8s-sample-service",
@@ -95,20 +114,23 @@ func LoadConfig() *Config {
 	}
 }
 
-// ReadDBSecretConfigFromFile read config from a file which is mounted as db-secret
-func ReadDBSecretConfigFromFile(filePath string) DatabaseConfig {
+// ReadDBSecretConfig read config from a file which is mounted as db-secret
+func ReadDBSecretConfig(filePath string) DatabaseConfig {
 
-	// Read a file
-	data, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		log.Fatalf("Error reading config file: %v", err)
-	}
-
+	data := ReadConfigFileFromSecret(filePath)
 	// Parse YAML
 	var dbConfig DatabaseConfig
-	err = yaml.Unmarshal(data, &dbConfig)
+	err := yaml.Unmarshal(data, &dbConfig)
 	if err != nil {
 		log.Fatalf("Error parsing YAML: %v", err)
 	}
 	return dbConfig
+}
+
+func ReadConfigFileFromSecret(filePath string) []byte {
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Fatalf("Error reading config file: %v", err)
+	}
+	return data
 }

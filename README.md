@@ -55,7 +55,7 @@ OR
 
 Start minikube with hyperkit driver
 ```shell
-    minikube start --memory=4098 --driver=hyperkit
+  minikube start --memory=4098 --driver=hyperkit
 ```
 
 ```shell
@@ -67,6 +67,11 @@ Start minikube with hyperkit driver
 
 Create Pod:
 Minikube, you need to load the image into its internal Docker environment:
+Build Docker Image:
+```shell
+  docker build -t babulal107/go-k8s-sample-app:latest .
+```
+Load Docker image to minikube
 ```shell
   minikube image load babulal107/go-k8s-sample-app:latest
 ```
@@ -160,11 +165,14 @@ Hit request through NodePort IP address
   curl http://192.168.49.2:30007/health-check
 ```
   If you're running Minikube with the Docker driver on macOS (Darwin), 
-  NodePort services are not directly accessible via minikube ip due to how networking works with Docker.
+  NodePort services are not directly accessible via minikube ip:<NodePort>.
+  This is because the Minikube VM is running inside Docker, and it does not expose services to your host machine in the usual way.
 
 Use minikube service Command:
     This will return a URL like: http://127.0.0.1:XXXXX
 ```shell
+  minikube service go-k8s-app-service
+  
   minikube service go-k8s-app-service --url
 ```
 
@@ -172,6 +180,26 @@ Use this URL to test your service:
 ```shell
   curl http://127.0.0.1:60001/health-check
 ```
+
+### How to Use minikube tunnel for LoadBalancer Services:
+
+Create Service as LoadBalancer
+```shell
+   kubectl apply -f k8s/service_with_load_balancer.yml
+   
+   kubectl get svc
+```
+You will see your service as LoadBalancer
+Notice that EXTERNAL-IP is <pending>—this means the LoadBalancer isn't assigned an external IP yet.
+
+```shell
+  minikube tunnel
+  
+  kubectl get svc
+```
+Get the Assigned EXTERNAL-IP
+Access App with external-ip like http://127.0.0.1:80/
+
  
 ## Install KubeShark
   Doc link: https://docs.kubeshark.co/en/install
@@ -338,7 +366,7 @@ db_secret.yaml
 
 app_secret.yaml
 ```shell
-  echo -n "APP_PORT: 8080\nAPP_LOG_LEVEL: root\nAPP_ENV: dev" | base64
+  echo -n "APP_NAME: go-k8s-app-service\nAPP_PORT: 8080\nAPP_LOG_LEVEL: debug\nAPP_ENV: dev" | base64
 ```
 
 ```shell
