@@ -47,8 +47,15 @@ Run
 ### Start Minikube:
 Once we do minikube start, your k8s cluster started
 On Mac/Windows on => VM -> single node Kubernetes cluster with a default driver as docker
+default with a docker driver
 ```shell
   minikube start
+```
+OR 
+
+Start minikube with hyperkit driver
+```shell
+    minikube start --memory=4098 --driver=hyperkit
 ```
 
 ```shell
@@ -343,3 +350,126 @@ app_secret.yaml
     --from-file=k8s/config/app_config.yaml --from-file=k8s/config/db_secret.yaml 
 ```
 
+## Kubernetes Monitoring Using Prometheus & Grafana
+More about Monitoring: https://github.com/iam-veeramalla/observability-zero-to-hero/tree/main/day-1
+
+### 1. Prometheus:
+ - Prometheus is an open-source systems monitoring and alerting toolkit.
+ - It is known for its robust data model, powerful query language (PromQL), and ability to generate alerts based on collected time-series data.
+ - And this data is stored in TSDB (time-series database)
+
+### 2. Prometheus Web UI
+ - The Prometheus Web UI allows users to explore the collected metrics data, run ad-hoc PromQL queries, and visualize the results directly within Prometheus.
+
+### 3. Grafana:
+ - Grafana is a powerful dashboard and visualization tool that integrates with Prometheus to provide rich, customizable visualizations of the metrics data.
+
+## Install Prometheus & Grafana using helm:
+
+### 1. Install helm
+```shell
+    brew install helm
+    
+    helm version
+```
+
+### Step 1: Add Helm Repositories:
+Adding prometheus and grafana repo to helm charts
+```shell
+  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  helm repo add grafana https://grafana.github.io/helm-charts
+  helm repo update
+```
+### Step 2: Install Prometheus using Helm
+```shell
+  helm install prometheus prometheus-community/prometheus
+  
+  OR
+  helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+```
+
+You will see prometheus pods running (alert-manager, server, kube-state-metrics etc.) with ClusterIP
+```shell
+   kubectl get pods
+   
+   kubectl get svc
+```
+
+All prometheus services are exposes type of ClusterIP
+Need to change prometheus-server expose type as NodePort to access outside k8s cluster
+```shell
+  kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-ext
+  
+  kubectl get svc
+```
+
+```shell
+  minikube ip
+```
+Access Prometheus: Now, access Prometheus using the Minikube IP and NodePort:
+`http://192.168.49.2:30000`
+
+#### Note : Minikube running with the Docker driver on macOS. Unlike other drivers (e.g., VirtualBox or HyperKit), the Docker driver does not expose NodePorts directly to the host machine.
+
+#### Use minikube service Command (Recommended) minikube tunnel:
+Minikube provides a built-in way to access services exposed as NodePort:
+
+```shell
+  minikube service prometheus-server-ext
+```
+This will automatically open the correct URL in your browser.
+
+
+### Step 3: Install Grafana using Helm
+```shell
+  helm install grafana grafana/grafana
+```
+##### Notes: You need to read what notes showing here because it's have important commands like get admin user password, etc.
+
+1. Get your 'admin' user password by running:
+```shell
+  kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+2. Need to expose grafana service as NodePort as default it's running as ClusterIP
+```shell
+  kubectl get svc grafana
+```
+```shell
+  kubectl expose service grafana --type=NodePort --target-port=3000 --name=grafana-ext
+  
+  kubectl get svc grafana-ext
+```
+#### Use minikube service Command (Recommended) minikube tunnel:
+Minikube provides a built-in way to access services exposed as NodePort:
+```shell
+   minikube service grafana-ext
+```
+This will automatically open the correct URL in your browser grafana dashboard.
+
+You can login grafana dashboard Username: admin and password you will get with this command
+```shell
+   kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+1. You need to configure Prometheus as Data Source like host will be http://minikube-ip:port
+2. Create Dashboard: you can used existing dashboard by importing like just type code 3662 and add
+
+We Need to expose prometheus-kube-state-metrics service as NodePort as default it's running as ClusterIP
+```shell
+  kubectl expose service prometheus-kube-state-metrics --type=NodePort --target-port=8080 --name=prometheus-kube-state-metrics-ext
+```
+
+You can configure prometheus-kube-state-metrics server ip in configMap of Prometheus server
+OR you can configure your custom go-lang app metrics also.
+```shell
+  kubectl get cm 
+  
+  kubectl edit cm prometheus-server
+```
+Add new jobs and set targets host with port like
+```
+scrape_configs:
+    - job_name: prometheus
+      static_configs:
+      - targets:
+        - localhost:9090
+```
