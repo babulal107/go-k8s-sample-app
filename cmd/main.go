@@ -32,6 +32,13 @@ func main() {
 		})
 	})
 
+	r.GET("/v1/hello", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status":  "ok",
+			"message": "Hello, you are calling endpoint v1/hello",
+		})
+	})
+
 	log.Println("Starting server on port: ", config.AppPort)
 	if err := r.Run(fmt.Sprintf(":%s", config.AppPort)); err != nil {
 		log.Fatalf("Failed to start server: %v", err)

@@ -270,6 +270,17 @@ We can add a filter to see specific endpoint traffic route requests:
 OR 
 `192.168.49.2 example.com`
 
+#### If you expose Service as LoadBalancer then
+If you use minikube tunnel, you should not need minikube ip, as the tunnel forwards traffic to 127.0.0.1. In this case, update /etc/hosts with:
+```shell
+    minikube tunnel
+    
+    echo "127.0.0.1 example.com" | sudo tee -a /etc/hosts
+```
+Then you can access your service with this url http://example.com
+
+
+
 ## ConfigMap & Secrets
   - ConfigMaps and Secrets are used to manage configuration data separately from application code.
   - ConfigMaps: Store non-sensitive configuration data (app-name, log-level, app-port, db-port etc). →  plain text

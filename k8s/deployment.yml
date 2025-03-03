@@ -17,12 +17,12 @@ spec:
       containers:
         - name: go-k8s-app
           image: babulal107/go-k8s-sample-app:latest  # Using local image OR replace with your image from remote registry
-          imagePullPolicy: Never # IfNotPresent  # Optional This forces Kubernetes to use the local image
+          imagePullPolicy: Never # IfNotPresent # Optional This forces Kubernetes to use the local image
           volumeMounts:
             - name: my-app-config
               readOnly: true
               mountPath: /opt/config/  # Go-code level, you can read the entire file at once and parse it.
-#              subPath: db_config.yaml   # Ensure the secret is mounted as a single file
+#              subPath: db_config.yaml # Ensure the secret is mounted as a single file
           ports:
             - containerPort: 8080
       volumes:
